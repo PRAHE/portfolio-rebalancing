@@ -1,0 +1,266 @@
+{
+  "relevant": true,
+  "articles_analyzed": [
+    {
+      "title": "코어16, AI 활용한 일간 환율 예측 서비스 출시",
+      "relevant": false
+    },
+    {
+      "title": "중동발 오일쇼크와 중국발 쓰나미 [마켓PRO]",
+      "relevant": true,
+      "sentiment": -0.70,
+      "impact": 4,
+      "confidence": 0.80,
+      "horizon": "mid",
+      "event_type": "geopolitical",
+      "tickers": ["AAPL", "MSFT", "GOOGL", "NVDA", "005930", "000660"],
+      "signal_score": -0.448,
+      "reason": "이란의 호르무즈 해협 봉쇄로 세계 원유 공급의 20%가 중단되며 스태그플레이션 리스크가 부각되고, 중국의 과잉생산 수출 공세가 반도체·IT 섹터 전반의 수요 및 마진에 하방 압력을 가중시킬 가능성이 높다."
+    },
+    {
+      "title": "인투셀 ADC 신약 후보 임상 1상의 첫 환자투여 완료",
+      "relevant": false
+    },
+    {
+      "title": "에스티로더, 스페인 푸치 인수 추진…뷰티 공룡 탄생 전망",
+      "relevant": false
+    },
+    {
+      "title": "중동 긴장 완화 기대감…환율 1500원 하회·코스피 5400선 회복 [HK영상]",
+      "relevant": true,
+      "sentiment": 0.50,
+      "impact": 3,
+      "confidence": 0.65,
+      "horizon": "intraday",
+      "event_type": "geopolitical",
+      "tickers": ["005930", "000660"],
+      "signal_score": 0.195,
+      "reason": "트럼프의 이란 협상 발언으로 WTI 유가가 9% 급락하고 코스피가 급등 출발했으나 이후 불확실성 재부각으로 상승폭이 축소되어 신호 신뢰도가 제한적이다."
+    },
+    {
+      "title": "금감원 ETF 포트폴리오 조정·공개 시장충격 최소화해야",
+      "relevant": false
+    },
+    {
+      "title": "'타코'에 급등 출발한 코스피, 불확실성 재점화에 보합권 '후퇴'",
+      "relevant": true,
+      "sentiment": -0.30,
+      "impact": 2,
+      "confidence": 0.70,
+      "horizon": "intraday",
+      "event_type": "macro",
+      "tickers": ["005930", "000660"],
+      "signal_score": -0.084,
+      "reason": "외국인의 대규모 현물·선물 매도가 지속되는 가운데 삼성전자·SK하이닉스는 장 초반 급등 후 상승폭을 대부분 반납하며 변동성이 확대된 상태다."
+    },
+    {
+      "title": "[마켓칼럼] 천궁-II 실전 검증이 만든 수혜, LIG넥스원 주목",
+      "relevant": false
+    },
+    {
+      "title": "글로벌텍스프리, 서울시티투어버스와 전략적 파트너십 MOU",
+      "relevant": false
+    },
+    {
+      "title": "유니드비티플러스, 경영진 자사주 매입 확대…주가 저평가 판단",
+      "relevant": false
+    },
+    {
+      "title": "이준석 오세훈과 연대 검토 안 해…국힘 공천 안 좋은 결과 예상",
+      "relevant": false
+    },
+    {
+      "title": "사회적 기업 토대 만드는 사회연대경제기본법, 행안위소위 통과",
+      "relevant": false
+    },
+    {
+      "title": "롯데마트, 28주년 생일에 최대 쇼핑 행사 연다",
+      "relevant": false
+    },
+    {
+      "title": "인애이블퓨젼, 이탈리아와 450억 계약 체결...국내 최초 핵융합 기술수출 사례",
+      "relevant": false
+    },
+    {
+      "title": "올릭스, 비만 타깃 ALK7 최대 84% 억제…영장류 데이터 공개",
+      "relevant": false
+    },
+    {
+      "title": "롯데건설 경기광주역 롯데캐슬 시그니처 1단지 4월 분양",
+      "relevant": false
+    },
+    {
+      "title": "상조·여행상품 가입하면 주는 가전제품···시세보다 최대 3배 비싸",
+      "relevant": false
+    },
+    {
+      "title": "박명수, 낙상 사고로 갈비뼈 부상…말 세게 못해",
+      "relevant": false
+    },
+    {
+      "title": "모션캡처 스타트업 무빈, 엔비디아의 AI 휴먼 모델 출시 파트너로 선정",
+      "relevant": true,
+      "sentiment": 0.30,
+      "impact": 1,
+      "confidence": 0.50,
+      "horizon": "short",
+      "event_type": "product",
+      "tickers": ["NVDA"],
+      "signal_score": 0.030,
+      "reason": "엔비디아 AI 휴먼 모델의 출시 파트너 선정 소식으로 NVDA의 AI 생태계 확장 모멘텀이 소폭 부각되나 직접적 매출 영향은 제한적이다."
+    },
+    {
+      "title": "도어락 비번 왜 바꿔 전처에 흉기 협박…경찰 폭행 50대 집유",
+      "relevant": false
+    },
+    {
+      "title": "The Roth IRA Move High Earners Shouldn't Overlook",
+      "relevant": false
+    },
+    {
+      "title": "Nvidia Corp (NVDA) Sets Sights on Chinese Customers After H200 License Approval",
+      "relevant": true,
+      "sentiment": 0.75,
+      "impact": 4,
+      "confidence": 0.82,
+      "horizon": "short",
+      "event_type": "regulation",
+      "tickers": ["NVDA"],
+      "signal_score": 0.492,
+      "reason": "중국 당국의 H200 판매 승인으로 엔비디아가 중국 시장 재진입 기반을 마련했으며, CEO 젠슨 황이 증산 계획을 발표하는 등 단기 매출 회복 기대감이 크게 높아졌다."
+    },
+    {
+      "title": "MercadoLibre Inc. (MELI) Positioned for E-commerce Growth Despite Downgrade on Competition Concerns",
+      "relevant": false
+    },
+    {
+      "title": "Broadcom Inc. (AVGO) Positioned for Robust Growth in 200T AI Era",
+      "relevant": false
+    },
+    {
+      "title": "Advanced Micro Devices Inc. (AMD) Deepens Ties with Samsung on Memory Chip Supplies and Foundry",
+      "relevant": true,
+      "sentiment": 0.60,
+      "impact": 3,
+      "confidence": 0.78,
+      "horizon": "mid",
+      "event_type": "product",
+      "tickers": ["005930"],
+      "signal_score": 0.280,
+      "reason": "AMD와 삼성전자 간 차세대 HBM 공급 및 파운드리 MOU 체결은 삼성전자의 AI 메모리·파운드리 수주 확대 가능성을 높이는 긍정적 이벤트다."
+    },
+    {
+      "title": "1 Brilliant Energy Stock to Buy Now and Hold for the Long Term",
+      "relevant": false
+    },
+    {
+      "title": "Stagwell Taps AppLovin Corporation (APP) Mobile Advertising Platform",
+      "relevant": false
+    },
+    {
+      "title": "Arista Networks (ANET) Targets AI Networking Boom with Expanding Market Opportunity and Strong Growth Outlook",
+      "relevant": false
+    },
+    {
+      "title": "Marvell Technology (MRVL) Unveils Advanced Switch for AI Data Center Scale-Up Infrastructure",
+      "relevant": false
+    },
+    {
+      "title": "Eli Lilly and Company (LLY) Expands Zepbound Access as Pricing Reforms Boost Long-Term Growth Outlook",
+      "relevant": false
+    },
+    {
+      "title": "트럼프, 15개 항목 합의 주장…이란, 전면 부인 중동 긴장 고조",
+      "relevant": true,
+      "sentiment": -0.55,
+      "impact": 3,
+      "confidence": 0.78,
+      "horizon": "short",
+      "event_type": "geopolitical",
+      "tickers": ["AAPL", "MSFT", "GOOGL", "NVDA", "005930", "000660"],
+      "signal_score": -0.257,
+      "reason": "트럼프의 합의 주장을 이란이 전면 부인하며 중동 긴장이 재고조되어 글로벌 매크로 불확실성이 지속되고 있다."
+    },
+    {
+      "title": "'동전주 퇴출' 100여일 앞두고 주식병합 러시…3월만 121곳",
+      "relevant": false
+    },
+    {
+      "title": "천국과 지옥 오간 금값..美 공격 중단에 하락폭 완화",
+      "relevant": false
+    },
+    {
+      "title": "뉴욕증시, 상승 전환…트럼프 이란과 협상 발언에 국제유가 급락, 기술주 중심의 강한 반등 지속 기대",
+      "relevant": true,
+      "sentiment": 0.55,
+      "impact": 3,
+      "confidence": 0.68,
+      "horizon": "intraday",
+      "event_type": "geopolitical",
+      "tickers": ["AAPL", "MSFT", "GOOGL", "NVDA"],
+      "signal_score": 0.223,
+      "reason": "트럼프의 이란 협상 시사 발언으로 유가 급락과 함께 나스닥 기술주 중심의 반등 흐름이 나타나 포트폴리오 미국 빅테크 종목에 단기 긍정 영향이 기대된다."
+    },
+    {
+      "title": "EU 집행위 유럽산 부품 사용한 SMR부터 우선 추진해야",
+      "relevant": false
+    },
+    {
+      "title": "스위스 UBS 반도체 기업 성장 전망 덕에 韓 증시 매력적 투자의견 상향",
+      "relevant": true,
+      "sentiment": 0.65,
+      "impact": 3,
+      "confidence": 0.80,
+      "horizon": "short",
+      "event_type": "macro",
+      "tickers": ["005930", "000660"],
+      "signal_score": 0.312,
+      "reason": "UBS가 반도체 성장 전망을 근거로 한국 증시 투자의견을 상향하며 삼성전자·SK하이닉스에 대한 외국인 매수 유입 가능성이 높아졌다."
+    },
+    {
+      "title": "엔비디아, 악재 딛고 1.57% 반등…반도체株 동반 상승",
+      "relevant": true,
+      "sentiment": 0.45,
+      "impact": 2,
+      "confidence": 0.72,
+      "horizon": "intraday",
+      "event_type": "macro",
+      "tickers": ["NVDA", "005930", "000660"],
+      "signal_score": 0.130,
+      "reason": "엔비디아 반등과 함께 반도체 섹터 전반이 동반 상승하며 포트폴리오 반도체 종목 전반에 단기 긍정 모멘텀을 제공한다."
+    },
+    {
+      "title": "美, 3700억 규모 에너지·핵심광물 투자 컨소시엄 구성…소프트뱅크·테마섹 등 참여",
+      "relevant": false
+    },
+    {
+      "title": "외화예금 두 달째 감소…1175억달러로 축소, 고환율에 매입 둔화",
+      "relevant": false
+    },
+    {
+      "title": "트럼프의 이란 관련 게시물 15분 전 5억8000만 달러 규모 원유 베팅 발생",
+      "relevant": true,
+      "sentiment": -0.40,
+      "impact": 2,
+      "confidence": 0.60,
+      "horizon": "short",
+      "event_type": "geopolitical",
+      "tickers": ["AAPL", "MSFT", "GOOGL", "NVDA", "005930", "000660"],
+      "signal_score": -0.096,
+      "reason": "정책 발언 전 대규모 원유 선물 포지션 형성 의혹은 시장 신뢰도를 훼손하고 중동 관련 정책 불확실성을 높여 포트폴리오 전반에 잠재적 리스크 요인이다."
+    }
+  ],
+  "consolidated_signal": {
+    "sentiment": -0.18,
+    "impact": 4,
+    "confidence": 0.78,
+    "horizon": "short",
+    "event_type": "geopolitical",
+    "tickers": ["AAPL", "MSFT", "GOOGL", "NVDA", "005930", "000660"],
+    "signal_score": -0.112,
+    "trigger": false,
+    "urgency": "watch",
+    "risk_level": "high",
+    "reason": "NVDA의 H200 중국 판매 승인 및 UBS 한국 반도체 투자의견 상향 등 긍정 신호가 존재하나, 이란의 협상 부인으로 중동 지정학 리스크가 재고조되고 중국발 과잉생산 공세까지 겹쳐 포트폴리오 전반의 방향성이 상충되는 상태로 변동성 확대에 대비한 모니터링이 필요하다."
+  }
+}
