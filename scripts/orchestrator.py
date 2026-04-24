@@ -25,11 +25,16 @@
 
 import os
 import json
+import uuid
+import sqlite3
 import argparse
 from datetime import datetime, timezone
+from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv()
+
+DB_PATH = Path("signals.db")
 
 # ── 포트폴리오 상태 (입력값) ──────────────────────────
 
@@ -40,6 +45,177 @@ PORTFOLIO_STATE = {
     "last_rebalanced": "2026-03-01",
 }
 
+# ── 사용자 목표 비중 및 제약 조건 ─────────────────────
+#
+# 은채 파트(다이렉트 인덱싱)에서 사용자가 입력한 값이
+# 이 형태로 오케스트레이터에 전달됩니다.
+# 수익 에이전트는 반드시 이 범위 안에서만 시뮬레이션합니다.
+
+USER_CONSTRAINTS = {
+    "targets": {
+        "005930": {"target": 0.60, "min": 0.45, "max": 0.75},
+        "000660": {"target": 0.40, "min": 0.25, "max": 0.55},
+    },
+    "risk_tolerance":       "moderate",   # conservative / moderate / aggressive
+    "max_trade_per_day":    0.20,         # 하루 최대 거래 비중
+    "rebalance_cooldown_h": 24,           # 리밸런싱 후 재실행 금지 시간
+}
+
+
+def validate_rebalance_plan(plan: dict) -> tuple[bool, str]:
+    """
+    리밸런싱 계획이 사용자 제약 조건을 위반하는지 검사합니다.
+    수익/비용 에이전트 결과를 실행하기 전 반드시 통과해야 합니다.
+    """
+    current = PORTFOLIO_STATE["weights"]
+    targets = USER_CONSTRAINTS["targets"]
+
+    for ticker, delta in plan.items():
+        new_weight = current.get(ticker, 0) + delta
+        constraint = targets.get(ticker)
+        if not constraint:
+            continue
+        if new_weight < constraint["min"]:
+            return False, (
+                f"{ticker} 리밸런싱 후 비중 {new_weight:.0%}이 "
+                f"최소 허용 비중 {constraint['min']:.0%}보다 낮습니다."
+            )
+        if new_weight > constraint["max"]:
+            return False, (
+                f"{ticker} 리밸런싱 후 비중 {new_weight:.0%}이 "
+                f"최대 허용 비중 {constraint['max']:.0%}보다 높습니다."
+            )
+
+    total_trade = sum(abs(v) for v in plan.values())
+    if total_trade > USER_CONSTRAINTS["max_trade_per_day"]:
+        return False, (
+            f"하루 최대 거래 비중 {USER_CONSTRAINTS['max_trade_per_day']:.0%} 초과: "
+            f"현재 요청 {total_trade:.0%}"
+        )
+
+    return True, "PASS"
+
+
+# ── decisions DB ─────────────────────────────────────
+#
+# 오케스트레이터의 모든 판단을 저장합니다.
+# "왜 그때 리밸런싱했는지"를 언제든 추적할 수 있습니다.
+# 블랙박스 해소 + 향후 피드백 루프의 기반 데이터가 됩니다.
+
+def init_decisions_db():
+    con = sqlite3.connect(DB_PATH)
+
+    # 판단 테이블
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS decisions (
+            id                  TEXT PRIMARY KEY,
+            run_at              TEXT,
+            decision            TEXT,
+            agents_called       TEXT,
+            each_agent_signal   TEXT,
+            rebalance_plan      TEXT,
+            confidence          REAL,
+            reason              TEXT,
+            constraint_violated TEXT,
+            fast_track          INTEGER,
+            executed            INTEGER,
+            user_feedback       TEXT,
+            scenario            TEXT
+        )
+    """)
+
+    # 평가 테이블 — 평가 에이전트가 판단 결과를 추적해서 기록
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS evaluations (
+            id                  TEXT PRIMARY KEY,
+            decision_id         TEXT,
+            evaluated_at        TEXT,
+            tickers             TEXT,
+            price_at_decision   TEXT,
+            price_3d_later      TEXT,
+            price_1w_later      TEXT,
+            return_3d           REAL,
+            return_1w           REAL,
+            direction_correct   INTEGER,
+            magnitude_error     REAL,
+            cost_efficiency     REAL,
+            verdict             TEXT,
+            note                TEXT
+        )
+    """)
+
+    con.commit()
+    con.close()
+
+
+def save_decision(decision: dict, agent_results: dict,
+                  scenario: str = "", constraint_msg: str = ""):
+    """오케스트레이터 최종 판단을 decisions 테이블에 저장"""
+
+    # 에이전트별 핵심 시그널만 추출해서 저장
+    each_signal = {}
+    for agent_name, result in agent_results.items():
+        if result.get("status") != "ok":
+            continue
+        data = result.get("data", {})
+        each_signal[agent_name] = {
+            "signal_score": data.get("signal_score"),
+            "opinion":      data.get("opinion"),
+            "confidence":   data.get("confidence"),
+            "reason":       result.get("reason", ""),
+        }
+
+    con = sqlite3.connect(DB_PATH)
+    con.execute("""
+        INSERT INTO decisions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+    """, (
+        str(uuid.uuid4()),
+        datetime.now(timezone.utc).isoformat(),
+        decision.get("decision", "HOLD"),
+        json.dumps(decision.get("agents_called", []), ensure_ascii=False),
+        json.dumps(each_signal, ensure_ascii=False),
+        json.dumps(decision.get("rebalance_plan", {}), ensure_ascii=False),
+        decision.get("confidence", 0.0),
+        decision.get("reason", ""),
+        constraint_msg,
+        int(decision.get("fast_track", False)),
+        0,          # executed: 실제 매매 연동 전까지 항상 0
+        "",         # user_feedback: 사용자 반응 (초기값 빈 문자열)
+        scenario,
+    ))
+    con.commit()
+    con.close()
+    print(f"  → decisions DB 저장 완료")
+
+
+def show_decisions(n: int = 5):
+    """최근 판단 이력 조회"""
+    con = sqlite3.connect(DB_PATH)
+    rows = con.execute("""
+        SELECT run_at, decision, confidence, reason,
+               agents_called, constraint_violated
+        FROM decisions
+        ORDER BY run_at DESC LIMIT ?
+    """, (n,)).fetchall()
+    con.close()
+
+    print(f"\n{'─'*70}")
+    print(f"{'실행시각':<28} {'결정':<12} {'신뢰도':>6}  판단 근거")
+    print(f"{'─'*70}")
+    for run_at, decision, conf, reason, agents, constraint in rows:
+        agents_list = json.loads(agents) if agents else []
+        short_reason = (reason or "")[:35]
+        print(f"{run_at[:26]:<28} {decision:<12} {conf:>5.2f}  {short_reason}")
+        print(f"  호출 에이전트: {agents_list}")
+        if constraint:
+            print(f"  제약 위반: {constraint}")
+    print(f"{'─'*70}\n")
+
+# ── 평가 에이전트 연동 ───────────────────────────────
+# evaluation_agent.py로 분리됨.
+# 오케스트레이터는 get_context()만 호출해서 컨텍스트를 받습니다.
+from evaluation_agent import run as run_evaluation_agent
+from evaluation_agent import get_context as get_evaluation_context
 
 # ── 공통 래퍼 헬퍼 ────────────────────────────────────
 
@@ -450,6 +626,20 @@ def run_mock_orchestrator(portfolio: dict, scenario: str) -> dict:
     # 최종 판단 (mock — 실제는 Claude가 판단)
     final = _mock_final_decision(agent_results, scenario)
 
+    # ── 사용자 제약 조건 검증 ──────────────────────────
+    constraint_msg = ""
+    if final["decision"] == "REBALANCE" and final.get("rebalance_plan"):
+        passed, msg = validate_rebalance_plan(final["rebalance_plan"])
+        if not passed:
+            print(f"\n  ⚠️  제약 조건 위반 → HOLD로 변경")
+            print(f"  사유: {msg}")
+            final["decision"]  = "BLOCKED"
+            final["reason"]    = f"제약 조건 위반으로 차단: {msg}"
+            final["urgency"]   = "watch"
+            constraint_msg     = msg
+        else:
+            print(f"\n  ✅ 제약 조건 통과")
+
     print(f"\n{'─'*60}")
     print(f"[최종 판단]")
     print(f"  decision       : {final['decision']}")
@@ -459,6 +649,9 @@ def run_mock_orchestrator(portfolio: dict, scenario: str) -> dict:
     print(f"  reason         : {final['reason']}")
     print(f"  agents_called  : {final['agents_called']}")
     print(f"{'='*60}")
+
+    # ── decisions DB 저장 ─────────────────────────────
+    save_decision(final, agent_results, scenario, constraint_msg)
 
     return final
 
@@ -609,6 +802,7 @@ Call the necessary agents to gather information, then provide your final decisio
 # ── 진입점 ────────────────────────────────────────────
 
 def run(real: bool = False, scenario: str = "neutral"):
+    init_decisions_db()
     if real:
         return run_real_orchestrator(PORTFOLIO_STATE, scenario)
     else:
@@ -622,6 +816,23 @@ if __name__ == "__main__":
     parser.add_argument("--scenario", default="neutral",
                         choices=["bull", "bear", "neutral"],
                         help="테스트 시나리오 (기본: neutral)")
+    parser.add_argument("--show",     action="store_true",
+                        help="최근 판단 이력 조회")
+    parser.add_argument("--evaluate", action="store_true",
+                        help="평가 에이전트 실행 (과거 판단 결과 추적)")
     args = parser.parse_args()
 
-    run(real=args.real, scenario=args.scenario)
+    init_decisions_db()
+
+    if args.show:
+        show_decisions()
+    elif args.evaluate:
+        # 평가는 evaluation_agent.py에서 직접 실행하세요.
+        # python evaluation_agent.py --mock   (테스트용)
+        # python evaluation_agent.py          (실제 운영)
+        print("평가 에이전트는 evaluation_agent.py로 분리됐습니다.")
+        print("  python evaluation_agent.py --mock     # 테스트용 (mock 피드백)")
+        print("  python evaluation_agent.py            # 실제 운영")
+        print("  python evaluation_agent.py --context  # 컨텍스트 조회")
+    else:
+        run(real=args.real, scenario=args.scenario)
